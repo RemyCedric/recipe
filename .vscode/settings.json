@@ -19,6 +19,7 @@
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features"
   },
-  "html.format.wrapLineLength": 250,
+  "html.format.wrapLineLength": 120,
+  "html.format.wrapAttributes": "aligned-multiple",
   "prettier.quoteProps": "preserve"
 }
