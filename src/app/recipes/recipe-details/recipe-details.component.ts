@@ -22,6 +22,12 @@ export class RecipeDetailsComponent implements OnInit {
   onEditRecipe() {
     this.router.navigate(['/recipes', this.id, 'edit']);
   }
+
+  onDeleteRecipe() {
+    this.recipeService.deleteRecipe(this.id);
+    this.router.navigate(['/recipes']);
+  }
+
   addIngredientToShoppingList() {
     this.recipeService.addIngredientToShopping(this.recipe);
   }
