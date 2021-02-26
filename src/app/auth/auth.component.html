@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-xs-12 col-md-6 col-md-offset-3">
+    <form [formGroup]="this.authForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" class="form-control" formControlName="email">
+        <span *ngIf="email.touched && email.invalid" class="help-block"> Please enter a valid email
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="passwor">Password</label>
+        <input type="password" id="password" class="form-control" formControlName="password">
+        <span *ngIf="password.touched && password.invalid" class="help-block">Please enter a password with at least 6
+          letters</span>
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit" [disabled]="this.authForm.invalid">{{this.isloginMode ?
+          'login':'sign-up'}}</button>
+        |
+        <button class="btn btn-primary" type="button" (click)="this.onSwitchMode()">Switch {{this.isloginMode ?
+          'sign-up':'login'}}</button>
+      </div>
+    </form>
+  </div>
+</div>
