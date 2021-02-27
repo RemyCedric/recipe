@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthService, AuthResponse } from './auth.service';
 
 @Component({
@@ -33,29 +34,24 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(): void {
+    let authObservable: Observable<AuthResponse>;
+
     if (this.authForm.valid) {
       this.isLoading = true;
       if (this.isloginMode) {
-        this.authService.signin(this.authForm.value).subscribe(
-          () => {
-            this.error = '';
-          },
-          (error) => {
-            this.isLoading = false;
-            this.error = error.error.error.message;
-          }
-        );
+        authObservable = this.authService.signin(this.authForm.value);
       } else {
-        this.authService.signup(this.authForm.value).subscribe(
-          () => {
-            this.error = '';
-          },
-          (error) => {
-            this.isLoading = false;
-            this.error = error.error.error.message;
-          }
-        );
+        authObservable = this.authService.signup(this.authForm.value);
       }
+      authObservable.subscribe(
+        () => {
+          this.error = '';
+        },
+        (errorMessage: string) => {
+          this.isLoading = false;
+          this.error = errorMessage;
+        }
+      );
       this.authForm.reset();
     }
   }
