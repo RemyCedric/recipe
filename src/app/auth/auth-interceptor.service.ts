@@ -12,8 +12,8 @@ export class AuthInterceptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.authService.user.pipe(
       take(1),
-      exhaustMap((user: User) => {
-        if (user.token.length === 0) {
+      exhaustMap((user: User | null) => {
+        if (!user) {
           return next.handle(req);
         }
         const updatedReq = req.clone({

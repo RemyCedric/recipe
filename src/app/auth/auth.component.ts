@@ -13,7 +13,7 @@ export class AuthComponent implements OnInit {
   authForm!: FormGroup;
   isloginMode = false;
   isLoading = false;
-  error = '';
+  error!: string | null;
 
   constructor(
     private authService: AuthService, //
@@ -49,7 +49,7 @@ export class AuthComponent implements OnInit {
       }
       authObservable.subscribe(
         () => {
-          this.error = '';
+          this.error = null;
           this.isLoading = false;
           this.router.navigate(['/recipes']);
         },

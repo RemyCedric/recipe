@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -20,9 +21,12 @@ export interface AuthResponse {
 })
 export class AuthService {
   keyAPI = environment.FIREBASE_API_KEY;
-  user = new BehaviorSubject<User>(new User('', '', '', new Date()));
+  user = new BehaviorSubject<User | null>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient, //
+    private router: Router
+  ) {}
 
   signup(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http
@@ -48,6 +52,11 @@ export class AuthService {
         catchError(this.handleError),
         tap((resData: AuthResponse) => this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn))
       );
+  }
+
+  logout() {
+    this.user.next(null);
+    this.router.navigate(['auth']);
   }
 
   private handleAuthentication(email: string, localId: string, idToken: string, expireIn: number) {
