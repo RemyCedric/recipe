@@ -19,7 +19,6 @@ const routes: Routes = [
       { path: ':id', component: RecipeDetailsComponent, resolve: [RecipesResolverService] },
       { path: ':id/edit', component: RecipeEditComponent },
     ],
-    resolve: [RecipesResolverService],
   },
   { path: 'shopping-list', component: ShoppingListComponent },
   { path: 'auth', component: AuthComponent },
