@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService, AuthResponse } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -10,7 +11,7 @@ export class AuthComponent implements OnInit {
   authForm!: FormGroup;
   isloginMode = false;
 
-  constructor() {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.authForm = new FormGroup({
@@ -30,7 +31,23 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log(this.authForm.value);
-    this.authForm.reset();
+    if (this.authForm.valid) {
+      if (this.isloginMode) {
+        this.authService.signin(this.authForm.value).subscribe(
+          (authResponse: AuthResponse) => {},
+          (error) => {
+            console.log(error);
+          }
+        );
+      } else {
+        this.authService.signup(this.authForm.value).subscribe(
+          (authResponse: AuthResponse) => {},
+          (error) => {
+            console.log(error);
+          }
+        );
+      }
+      this.authForm.reset();
+    }
   }
 }
