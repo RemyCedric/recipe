@@ -10,6 +10,8 @@ import { AuthService, AuthResponse } from './auth.service';
 export class AuthComponent implements OnInit {
   authForm!: FormGroup;
   isloginMode = false;
+  isLoading = false;
+  error = '';
 
   constructor(private authService: AuthService) {}
 
@@ -32,18 +34,25 @@ export class AuthComponent implements OnInit {
 
   onSubmit(): void {
     if (this.authForm.valid) {
+      this.isLoading = true;
       if (this.isloginMode) {
         this.authService.signin(this.authForm.value).subscribe(
-          (authResponse: AuthResponse) => {},
+          () => {
+            this.error = '';
+          },
           (error) => {
-            console.log(error);
+            this.isLoading = false;
+            this.error = error.error.error.message;
           }
         );
       } else {
         this.authService.signup(this.authForm.value).subscribe(
-          (authResponse: AuthResponse) => {},
+          () => {
+            this.error = '';
+          },
           (error) => {
-            console.log(error);
+            this.isLoading = false;
+            this.error = error.error.error.message;
           }
         );
       }
