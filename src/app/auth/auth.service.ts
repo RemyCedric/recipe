@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { User } from './user.model';
@@ -10,7 +10,7 @@ export interface AuthResponse {
   idToken: string;
   email: string;
   refreshToken: string;
-  expireIn: string;
+  expiresIn: string;
   localId: string;
   registered?: boolean;
 }
@@ -20,7 +20,7 @@ export interface AuthResponse {
 })
 export class AuthService {
   keyAPI = environment.FIREBASE_API_KEY;
-  user = new Subject<User>();
+  user = new BehaviorSubject<User>(new User('', '', '', new Date()));
 
   constructor(private http: HttpClient) {}
 
@@ -33,7 +33,7 @@ export class AuthService {
       })
       .pipe(
         catchError(this.handleError),
-        tap((resData: AuthResponse) => this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expireIn))
+        tap((resData: AuthResponse) => this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn))
       );
   }
 
@@ -46,12 +46,12 @@ export class AuthService {
       })
       .pipe(
         catchError(this.handleError),
-        tap((resData: AuthResponse) => this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expireIn))
+        tap((resData: AuthResponse) => this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn))
       );
   }
 
   private handleAuthentication(email: string, localId: string, idToken: string, expireIn: number) {
-    const expirationDate = new Date(new Date().getTime() + +expireIn * 1000);
+    const expirationDate = new Date(new Date().getTime() + expireIn * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.user.next(user);
   }
