@@ -22,6 +22,7 @@ export interface AuthResponse {
 export class AuthService {
   keyAPI = environment.FIREBASE_API_KEY;
   user = new BehaviorSubject<User | null>(null);
+  private tokenExpirationTime: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private http: HttpClient, //
@@ -57,9 +58,18 @@ export class AuthService {
   logout(): void {
     this.user.next(null);
     this.router.navigate(['auth']);
+    localStorage.removeItem('userData');
+    if (this.tokenExpirationTime) {
+      clearTimeout(this.tokenExpirationTime);
+      this.tokenExpirationTime = null;
+    }
   }
 
-  autoLogin() {
+  autoLogout(expirationDuration: number): void {
+    this.tokenExpirationTime = setTimeout(() => this.logout(), expirationDuration);
+  }
+
+  autoLogin(): void {
     const userData = localStorage.getItem('userData');
     if (userData) {
       const parsedUserData: {
@@ -76,6 +86,7 @@ export class AuthService {
       );
       if (user.token) {
         this.user.next(user);
+        this.autoLogout(new Date(parsedUserData._tokenExpirationDate).getTime() - new Date().getTime());
       }
     }
   }
@@ -84,6 +95,8 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expireIn * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.user.next(user);
+    this.autoLogout(expireIn * 1000);
+
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
