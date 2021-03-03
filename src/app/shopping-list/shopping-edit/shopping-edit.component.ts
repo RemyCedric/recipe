@@ -5,9 +5,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { Ingredient } from 'src/app/shared/ingredient.model';
-import { ShoppingListService } from '../shopping-list.service';
+import * as fromApp from '../../store/app.reducer';
+import * as ShoppingListActions from '../store/shopping-list.actions';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -19,22 +21,22 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   subscription!: Subscription;
   editedItemIndex!: number;
   editMode = false;
-  editedItem!: Ingredient;
+  editedItem!: Ingredient | null;
 
-  constructor(private shoppingListService: ShoppingListService) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   onSubmit(): void {
-    const ingredient = new Ingredient(this.ngForm.value.name, this.ngForm.value.amount);
+    const newIngredient = new Ingredient(this.ngForm.value.name, this.ngForm.value.amount);
     if (this.editMode) {
-      this.shoppingListService.updateIngredient(ingredient, this.editedItemIndex);
+      this.store.dispatch(new ShoppingListActions.UpdateIngredient(newIngredient));
     } else {
-      this.shoppingListService.addIngredient(ingredient);
+      this.store.dispatch(new ShoppingListActions.AddIngredient(newIngredient));
     }
     this.clear();
   }
 
   delete(): void {
-    this.shoppingListService.removeIngredient(this.editedItemIndex);
+    this.store.dispatch(new ShoppingListActions.DeleteIngredient());
     this.clear();
   }
 
@@ -44,12 +46,17 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription = this.shoppingListService.getStartedEditing().subscribe((index: number) => {
-      const ingredient = this.shoppingListService.getIngredient(index);
-      this.editedItemIndex = index;
-      this.editMode = true;
-      this.editedItem = ingredient;
-      this.ngForm.setValue({ ...ingredient });
+    this.subscription = this.store.select('shoppingList').subscribe((stateData) => {
+      if (stateData.editedIngredientIndex > -1) {
+        this.editMode = true;
+        this.editedItem = stateData.editedIngredient;
+        this.ngForm.setValue({
+          name: this.editedItem ? this.editedItem.name : '',
+          amount: this.editedItem ? this.editedItem.amount : '',
+        });
+      } else {
+        this.editMode = false;
+      }
     });
   }
   ngOnDestroy(): void {
