@@ -11,6 +11,7 @@ import { RecipeComponent } from './recipe-list/recipe/recipe.component';
 import { RecipeStartComponent } from './recipe-start/recipe-start.component';
 import { RecipesResolverService } from './recipes-resolver.service';
 import { RecipesComponent } from './recipes.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,6 @@ import { RecipesComponent } from './recipes.component';
     RecipeEditComponent,
   ],
   imports: [
-    CommonModule, //
     ReactiveFormsModule,
     RouterModule.forChild([
       {
@@ -37,6 +37,7 @@ import { RecipesComponent } from './recipes.component';
         ],
       },
     ]),
+    SharedModule,
   ],
 })
 export class RecipesModule {}

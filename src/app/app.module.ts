@@ -10,18 +10,15 @@ import { RecipesModule } from './recipes/recipes.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { DropdownDirective } from './shared/directives/dropdown.directive';
 import { AuthComponent } from './auth/auth.component';
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent, //
     HeaderComponent,
-    DropdownDirective,
     AuthComponent,
-    LoadingSpinnerComponent,
   ],
   imports: [
     BrowserModule, //
@@ -31,6 +28,7 @@ import { ShoppingListModule } from './shopping-list/shopping-list.module';
     AppRoutingModule,
     RecipesModule,
     ShoppingListModule,
+    SharedModule,
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent],
