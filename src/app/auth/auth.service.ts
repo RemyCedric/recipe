@@ -91,7 +91,7 @@ export class AuthService {
     }
   }
 
-  private handleAuthentication(email: string, localId: string, idToken: string, expireIn: number) {
+  private handleAuthentication(email: string, localId: string, idToken: string, expireIn: number): void {
     const expirationDate = new Date(new Date().getTime() + expireIn * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.user.next(user);
@@ -100,7 +100,7 @@ export class AuthService {
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
-  private handleError(errorResponse: HttpErrorResponse) {
+  private handleError(errorResponse: HttpErrorResponse): Observable<never> {
     let errorMessage = 'unknow error happened';
 
     if (errorResponse.error && errorResponse.error.error) {
